@@ -2223,11 +2223,36 @@ async def dni_pamjati():
         netprobelov = sokrash.replace("\n", "")
         sorkash = netprobelov[17:-45]
         electricity.append(sorkash)
+    response3 = requests.get("https://www.yr.no/en/forecast/hourly-table/2-588409/Estonia/Harju/Tallinn/Tallinn?i=1")
+    soup3 = BeautifulSoup(response3.text, "html.parser")
+    data3 = soup3.find_all("div", class_="hourly-weather-table")
+    result31 = []
+    for div in data3:
+        pogoda = div.text
+        result31.append(pogoda)
+    result32 = pogoda[90:]
+    result33 = result32.split("m/s")
+    temperature = []
+    for j in range(len(result33)):
+        if len(result33[j]) == 24:
+            vspom31 = result33[j]
+            vspom32 = vspom31[:-17]
+            result33[j] = vspom32
+        if len(result33[j]) == 20:
+            vspom33 = result33[j]
+            vspom34 = vspom33[:-13]
+            result33[j] = vspom34
+    for j in range(len(result33) - 49):
+        vspom35 = result33[3 * j]
+        vspom36 = vspom35[2:-3]
+        temperature.append(vspom36)
     await Bot.send_message(chat_id=os.getenv('moi_id'),text='Божией помощи на день! Дни памяти святых:')
     await Bot.send_message(chat_id=os.getenv('moi_id'), text=f"{result}")
     await Bot.send_message(chat_id=os.getenv('moi_id'), text='Цены на электричество:')
     await Bot.send_message(chat_id=os.getenv('moi_id'), text=f"{electricity}")
+    await Bot.send_message(chat_id=os.getenv('moi_id'), text='Температура воздуха в Таллинне по часам:')
+    await Bot.send_message(chat_id=os.getenv('moi_id'), text=f"{electricity}")
 scheduler = AsyncIOScheduler()
-scheduler.add_job(dni_pamjati, 'cron', hour=1, minute=00, timezone='Europe/Kiev')
+scheduler.add_job(dni_pamjati, 'cron', hour=2, minute=25, timezone='Europe/Kiev')
 if __name__ == "__main__":
     asyncio.run(main())
