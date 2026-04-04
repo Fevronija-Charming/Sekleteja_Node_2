@@ -2210,9 +2210,9 @@ async def dni_pamjati():
     result = imena.split(")")
     for i in range(len(result)):
         result[i] = result[i] + ")"
-    await Bot.send_message(chat_id=os.getenv('moi_id'),text='Божией помощи на день!')
+    await Bot.send_message(chat_id=os.getenv('moi_id'),text='Божией помощи на день! Дни памяти святых:')
     await Bot.send_message(chat_id=os.getenv('moi_id'), text=f"{result}")
 scheduler = AsyncIOScheduler()
-scheduler.add_job(dni_pamjati, 'cron', hour=00, minute=20)
+scheduler.add_job(dni_pamjati, 'cron', hour=00, minute=40)
 if __name__ == "__main__":
     asyncio.run(main())
