@@ -2210,9 +2210,24 @@ async def dni_pamjati():
     result = imena.split(")")
     for i in range(len(result)):
         result[i] = result[i] + ")"
+    response2 = requests.get("https://www.elering.ee")
+    soup2 = BeautifulSoup(response2.text, "html.parser")
+    data2 = soup2.find_all("div", class_="live_prices_card__graph--column")
+    elektro = []
+    for div in data2:
+        price = div.text
+        elektro.append(price)
+    electricity = []
+    for i in range(24):
+        sokrash = elektro[i]
+        netprobelov = sokrash.replace("\n", "")
+        sorkash = netprobelov[17:-45]
+        electricity.append(sorkash)
     await Bot.send_message(chat_id=os.getenv('moi_id'),text='Божией помощи на день! Дни памяти святых:')
     await Bot.send_message(chat_id=os.getenv('moi_id'), text=f"{result}")
+    await Bot.send_message(chat_id=os.getenv('moi_id'), text='Цены на электричество:')
+    await Bot.send_message(chat_id=os.getenv('moi_id'), text=f"{electricity}")
 scheduler = AsyncIOScheduler()
-scheduler.add_job(dni_pamjati, 'cron', hour=0, minute=50, timezone='Europe/Kiev')
+scheduler.add_job(dni_pamjati, 'cron', hour=1, minute=00, timezone='Europe/Kiev')
 if __name__ == "__main__":
     asyncio.run(main())
