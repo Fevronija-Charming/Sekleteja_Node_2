@@ -517,6 +517,20 @@ async def organizer_glav(message: types.Message):
 async def vyhod_sbros(message: types.Message,state: FSMContext):
     await message.answer(text="Выход",reply_markup=ReplyKeyboardRemove())
     await state.clear()
+# костыль для получения id фото в системе тг
+class Vvod_Foto(StatesGroup):
+    get_foto_id=State()
+@dp.message((F.text.lower()=="скормить_фото"))
+async def foto_avatara(message: types.Message, state: FSMContext):
+    await message.answer(text="Получение id для фото")
+    await state.set_state(Vvod_Foto.get_foto_id)
+@dp.message(Vvod_Foto.get_foto_id, F.photo)
+async def FotoSsyla(message: types.Message, state: FSMContext):
+    await state.update_data(FotoAvatar=message.photo[-1].file_id)
+    data=await state.get_data()
+    await state.clear()
+    await message.answer(text=f"{data}")
+    print(data)
 # СКРИПТ УПРАВЛЯЮЩИЙ ПРОЕКТАМИ
 klava_projekt=ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text="ввод проекта"),KeyboardButton(text="проверка проекта")],
