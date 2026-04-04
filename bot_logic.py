@@ -12,6 +12,9 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemo
 TOKEN_API_KEY= os.getenv("TOKEN_API_KEY")
 bot_id=os.getenv("bot_id")
 moi_id=os.getenv("moi_id")
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from bs4 import BeautifulSoup
+import requests
 from faststream.rabbit import RabbitBroker
 projekt=[]
 # для тестов
@@ -2194,5 +2197,23 @@ async def main():
     await Bot.set_my_commands(commands=private, scope=types.BotCommandScopeAllPrivateChats())
     await Bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(Bot)
+async def dni_pamjati():
+    response = requests.get("https://azbyka.ru/days/")
+    soup = BeautifulSoup(response.text, "html.parser")
+    data = soup.find_all("div", class_="text day__text")
+    svjatcy = ""
+    for div in data:
+        strofa = div.text
+        svjatcy  += str(strofa)
+    imena = svjatcy [65:-2]
+    result = imena.split(")")
+    for i in range(len(result)):
+        result[i] = result[i] + ")"
+    await Bot.send_message(chat_id=os.getenv('moi_id'),text='Божией помощи на день!')
+    await Bot.send_message(chat_id=os.getenv('moi_id'), text=f"{result}")
+scheduler = AsyncIOScheduler()
+scheduler.add_job(dni_pamjati, 'cron', hour=00, minute=20)
+scheduler.start()
+asyncio.get_event_loop().run_forever()
 if __name__ == "__main__":
     asyncio.run(main())
