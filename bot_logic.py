@@ -2192,6 +2192,7 @@ async def main():
 # CRUD костыль на создание таблиц
     #kostyly_DB()
 # ORM на таблицу по ученикам
+    scheduler.start()
     await create_tably()
     init(autoreset=True)
     await Bot.set_my_commands(commands=private, scope=types.BotCommandScopeAllPrivateChats())
@@ -2213,6 +2214,5 @@ async def dni_pamjati():
     await Bot.send_message(chat_id=os.getenv('moi_id'), text=f"{result}")
 scheduler = AsyncIOScheduler()
 scheduler.add_job(dni_pamjati, 'cron', hour=00, minute=20)
-scheduler.start()
 if __name__ == "__main__":
     asyncio.run(main())
