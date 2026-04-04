@@ -2214,6 +2214,5 @@ async def dni_pamjati():
 scheduler = AsyncIOScheduler()
 scheduler.add_job(dni_pamjati, 'cron', hour=00, minute=20)
 scheduler.start()
-asyncio.get_event_loop().run_forever()
 if __name__ == "__main__":
     asyncio.run(main())
