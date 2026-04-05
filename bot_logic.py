@@ -15,6 +15,7 @@ moi_id=os.getenv("moi_id")
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from bs4 import BeautifulSoup
 import requests
+from fastapi import BackgroundTasks
 from faststream.rabbit import RabbitBroker
 projekt=[]
 # для тестов
@@ -2198,7 +2199,9 @@ async def main():
     await Bot.set_my_commands(commands=private, scope=types.BotCommandScopeAllPrivateChats())
     await Bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(Bot)
-async def dni_pamjati():
+async def dni_pamjati(background_task: BackgroundTasks):
+    background_task.add_task(zapros_infa)
+async def zapros_infa():
     response = requests.get("https://azbyka.ru/days/")
     soup = BeautifulSoup(response.text, "html.parser")
     data = soup.find_all("div", class_="text day__text")
@@ -2260,6 +2263,8 @@ async def dni_pamjati():
     for span in data2:
         vspom40 = span.text
         trapeza += str(vspom40)
+    await priv_soobhenije(result,trapeza,electricity,temperature)
+async def priv_soobhenije(result:str,trapeza:str,electricity:str,temperature:str):
     await Bot.send_message(chat_id=os.getenv('moi_id'),text='Божией помощи на день! Дни памяти святых:')
     await Bot.send_message(chat_id=os.getenv('moi_id'), text=f"{result}")
     await Bot.send_message(chat_id=os.getenv('moi_id'), text='Устав о трапезе:')
@@ -2269,6 +2274,6 @@ async def dni_pamjati():
     await Bot.send_message(chat_id=os.getenv('moi_id'), text='Температура воздуха в Таллинне по часам:')
     await Bot.send_message(chat_id=os.getenv('moi_id'), text=f"{temperature}")
 scheduler = AsyncIOScheduler()
-scheduler.add_job(dni_pamjati, 'cron', hour=0, minute=5, timezone='Europe/Kiev')
+scheduler.add_job(dni_pamjati, 'cron', hour=0, minute=1, timezone='Europe/Kiev')
 if __name__ == "__main__":
     asyncio.run(main())
