@@ -1,7 +1,7 @@
 # импорты для конфигурации движка приложения
 import asyncio
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, Union
-from datetime import datetime
+from datetime import datetime, date, timedelta
 import time
 import calendar
 from aiogram.fsm.context import FSMContext
@@ -2246,13 +2246,29 @@ async def dni_pamjati():
         vspom35 = result33[3 * j]
         vspom36 = vspom35[2:-3]
         temperature.append(vspom36)
+    today = date.today()
+    stary_stile = str(today - timedelta(days=13))
+    year_zapr = stary_stile[:-6]
+    month_zapr = stary_stile[5:-3]
+    day_zapr = stary_stile[8:]
+    data_zapr = year_zapr + month_zapr + day_zapr
+    ssylka = "https://days.pravoslavie.ru/Days/" + data_zapr + ".html"
+    response2 = requests.get(ssylka)
+    soup = BeautifulSoup(response2.text, "html.parser")
+    data2 = soup.find_all("span", class_="DD_POST")
+    trapeza = ""
+    for span in data2:
+        vspom40 = span.text
+        trapeza += str(vspom40)
     await Bot.send_message(chat_id=os.getenv('moi_id'),text='Божией помощи на день! Дни памяти святых:')
     await Bot.send_message(chat_id=os.getenv('moi_id'), text=f"{result}")
+    await Bot.send_message(chat_id=os.getenv('moi_id'), text='Устав о трапезе:')
+    await Bot.send_message(chat_id=os.getenv('moi_id'), text=f"{trapeza}")
     await Bot.send_message(chat_id=os.getenv('moi_id'), text='Цены на электричество EUR/MWH:')
     await Bot.send_message(chat_id=os.getenv('moi_id'), text=f"{electricity}")
     await Bot.send_message(chat_id=os.getenv('moi_id'), text='Температура воздуха в Таллинне по часам:')
     await Bot.send_message(chat_id=os.getenv('moi_id'), text=f"{temperature}")
 scheduler = AsyncIOScheduler()
-scheduler.add_job(dni_pamjati, 'cron', hour=2, minute=30, timezone='Europe/Kiev')
+scheduler.add_job(dni_pamjati, 'cron', hour=0, minute=5, timezone='Europe/Kiev')
 if __name__ == "__main__":
     asyncio.run(main())
