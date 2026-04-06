@@ -2199,74 +2199,79 @@ async def main():
     await Bot.set_my_commands(commands=private, scope=types.BotCommandScopeAllPrivateChats())
     await Bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(Bot)
-async def dni_pamjati(background_task: BackgroundTasks):
-    background_task.add_task(zapros_infa)
-async def zapros_infa():
-    response = requests.get("https://azbyka.ru/days/")
-    soup = BeautifulSoup(response.text, "html.parser")
-    data = soup.find_all("div", class_="text day__text")
-    svjatcy = ""
-    for div in data:
-        strofa = div.text
-        svjatcy  += str(strofa)
-    imena = svjatcy [65:-2]
-    result = imena.split(")")
-    for i in range(len(result)):
-        result[i] = result[i] + ")"
-    response2 = requests.get("https://www.elering.ee")
-    soup2 = BeautifulSoup(response2.text, "html.parser")
-    data2 = soup2.find_all("div", class_="live_prices_card__graph--column")
-    elektro = []
-    for div in data2:
-        price = div.text
-        elektro.append(price)
-    electricity = []
-    for i in range(24):
-        sokrash = elektro[i]
-        netprobelov = sokrash.replace("\n", "")
-        sorkash = netprobelov[17:-45]
-        electricity.append(sorkash)
-    response3 = requests.get("https://www.yr.no/en/forecast/hourly-table/2-588409/Estonia/Harju/Tallinn/Tallinn?i=1")
-    soup3 = BeautifulSoup(response3.text, "html.parser")
-    data3 = soup3.find_all("div", class_="hourly-weather-table")
-    result31 = []
-    for div in data3:
-        pogoda = div.text
-        result31.append(pogoda)
-    result32 = pogoda[90:]
-    result33 = result32.split("m/s")
-    temperature = []
-    for j in range(len(result33)):
-        if len(result33[j]) == 24:
-            vspom31 = result33[j]
-            vspom32 = vspom31[:-17]
-            result33[j] = vspom32
-        if len(result33[j]) == 20:
-            vspom33 = result33[j]
-            vspom34 = vspom33[:-13]
-            result33[j] = vspom34
-    for j in range(len(result33) - 49):
-        vspom35 = result33[3 * j]
-        vspom36 = vspom35[2:-3]
-        temperature.append(vspom36)
-    today = date.today()
-    stary_stile = str(today - timedelta(days=13))
-    year_zapr = stary_stile[:-6]
-    month_zapr = stary_stile[5:-3]
-    day_zapr = stary_stile[8:]
-    data_zapr = year_zapr + month_zapr + day_zapr
-    ssylka = "https://days.pravoslavie.ru/Days/" + data_zapr + ".html"
-    response2 = requests.get(ssylka)
-    soup = BeautifulSoup(response2.text, "html.parser")
-    data2 = soup.find_all("span", class_="DD_POST")
-    trapeza = ""
-    for span in data2:
-        vspom40 = span.text
-        trapeza += str(vspom40)
-    await priv_soobhenije(result,trapeza,electricity,temperature)
-async def priv_soobhenije(result:str,trapeza:str,electricity:str,temperature:str):
+async def ezhev_priv():
+    try:
+        response = requests.get("https://azbyka.ru/days/")
+        soup = BeautifulSoup(response.text, "html.parser")
+        data = soup.find_all("div", class_="text day__text")
+        svjatcy = ""
+        for div in data:
+            strofa = div.text
+            svjatcy  += str(strofa)
+        imena = svjatcy [65:-2]
+        result = imena.split(")")
+        for i in range(len(result)):
+            result[i] = result[i] + ")"
+        svjatyje=result
+    except: svjatyje="ПОМЯННИК НЕТ ОТВЕТА"
+    try:
+        response2 = requests.get("https://www.elering.ee")
+        soup2 = BeautifulSoup(response2.text, "html.parser")
+        data2 = soup2.find_all("div", class_="live_prices_card__graph--column")
+        elektro = []
+        for div in data2:
+            price = div.text
+            elektro.append(price)
+            electricity = []
+        for i in range(24):
+            sokrash = elektro[i]
+            netprobelov = sokrash.replace("\n", "")
+            sorkash = netprobelov[17:-45]
+            electricity.append(sorkash)
+    except: electricity="ЭЛЕКТРОБИРЖА НЕТ ОТВЕТА"
+    try:
+        response3 = requests.get("https://www.yr.no/en/forecast/hourly-table/2-588409/Estonia/Harju/Tallinn/Tallinn?i=1")
+        soup3 = BeautifulSoup(response3.text, "html.parser")
+        data3 = soup3.find_all("div", class_="hourly-weather-table")
+        result31 = []
+        for div in data3:
+            pogoda = div.text
+            result31.append(pogoda)
+            result32 = pogoda[90:]
+            result33 = result32.split("m/s")
+            temperature = []
+        for j in range(len(result33)):
+            if len(result33[j]) == 24:
+                vspom31 = result33[j]
+                vspom32 = vspom31[:-17]
+                result33[j] = vspom32
+            if len(result33[j]) == 20:
+                vspom33 = result33[j]
+                vspom34 = vspom33[:-13]
+                result33[j] = vspom34
+        for j in range(len(result33) - 49):
+            vspom35 = result33[3 * j]
+            vspom36 = vspom35[2:-3]
+            temperature.append(vspom36)
+    except: temperature="ПОГОДА НЕТ ОТВЕТА"
+    try:
+        today = date.today()
+        stary_stile = str(today - timedelta(days=13))
+        year_zapr = stary_stile[:-6]
+        month_zapr = stary_stile[5:-3]
+        day_zapr = stary_stile[8:]
+        data_zapr = year_zapr + month_zapr + day_zapr
+        ssylka = "https://days.pravoslavie.ru/Days/" + data_zapr + ".html"
+        response2 = requests.get(ssylka)
+        soup = BeautifulSoup(response2.text, "html.parser")
+        data2 = soup.find_all("span", class_="DD_POST")
+        trapeza = ""
+        for span in data2:
+            vspom40 = span.text
+            trapeza += str(vspom40)
+    except: trapeza="УСТАВ ТРАПЕЗЫ НЕТ ОТВЕТА"
     await Bot.send_message(chat_id=os.getenv('moi_id'),text='Божией помощи на день! Дни памяти святых:')
-    await Bot.send_message(chat_id=os.getenv('moi_id'), text=f"{result}")
+    await Bot.send_message(chat_id=os.getenv('moi_id'), text=f"{svjatyje}")
     await Bot.send_message(chat_id=os.getenv('moi_id'), text='Устав о трапезе:')
     await Bot.send_message(chat_id=os.getenv('moi_id'), text=f"{trapeza}")
     await Bot.send_message(chat_id=os.getenv('moi_id'), text='Цены на электричество EUR/MWH:')
@@ -2274,6 +2279,6 @@ async def priv_soobhenije(result:str,trapeza:str,electricity:str,temperature:str
     await Bot.send_message(chat_id=os.getenv('moi_id'), text='Температура воздуха в Таллинне по часам:')
     await Bot.send_message(chat_id=os.getenv('moi_id'), text=f"{temperature}")
 scheduler = AsyncIOScheduler()
-scheduler.add_job(dni_pamjati, 'cron', hour=0, minute=1, timezone='Europe/Kiev')
+scheduler.add_job(ezhev_priv, 'cron', hour=14, minute=10, timezone='Europe/Kiev')
 if __name__ == "__main__":
     asyncio.run(main())
