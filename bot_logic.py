@@ -2210,10 +2210,14 @@ async def ezhev_priv():
             svjatcy  += str(strofa)
         imena = svjatcy [65:-2]
         result = imena.split(")")
+        stroka_trapezy= svjatcy.split("Г")
+        trapeza=stroka_trapezy[0]
         for i in range(len(result)):
             result[i] = result[i] + ")"
         svjatyje=result
-    except: svjatyje="ПОМЯННИК НЕТ ОТВЕТА"
+    except:
+            svjatyje="ПОМЯННИК НЕТ ОТВЕТА"
+            trapeza="ТРАПЕЗА НЕТ ОТВЕТА"
     try:
         response2 = requests.get("https://www.elering.ee")
         soup2 = BeautifulSoup(response2.text, "html.parser")
@@ -2230,7 +2234,7 @@ async def ezhev_priv():
             electricity.append(sorkash)
     except: electricity="ЭЛЕКТРОБИРЖА НЕТ ОТВЕТА"
     try:
-        response3 = requests.get("https://www.yr.no/en/forecast/hourly-table/2-588409/Estonia/Harju/Tallinn/Tallinn?i=1")
+        response3 = requests.get("https://www.yr.no/en/forecast/hourly-table/2-588409/Estonia/Harju/Tallinn/Tallinn?i=0")
         soup3 = BeautifulSoup(response3.text, "html.parser")
         data3 = soup3.find_all("div", class_="hourly-weather-table")
         result31 = []
@@ -2254,22 +2258,22 @@ async def ezhev_priv():
             vspom36 = vspom35[2:-3]
             temperature.append(vspom36)
     except: temperature="ПОГОДА НЕТ ОТВЕТА"
-    try:
-        today = date.today()
-        stary_stile = str(today - timedelta(days=13))
-        year_zapr = stary_stile[:-6]
-        month_zapr = stary_stile[5:-3]
-        day_zapr = stary_stile[8:]
-        data_zapr = year_zapr + month_zapr + day_zapr
-        ssylka = "https://days.pravoslavie.ru/Days/" + data_zapr + ".html"
-        response2 = requests.get(ssylka)
-        soup = BeautifulSoup(response2.text, "html.parser")
-        data2 = soup.find_all("span", class_="DD_POST")
-        trapeza = ""
-        for span in data2:
-            vspom40 = span.text
-            trapeza += str(vspom40)
-    except: trapeza="УСТАВ ТРАПЕЗЫ НЕТ ОТВЕТА"
+    #try:
+        #today = date.today()
+        #stary_stile = str(today - timedelta(days=13))
+        #year_zapr = stary_stile[:-6]
+        #month_zapr = stary_stile[5:-3]
+        #day_zapr = stary_stile[8:]
+        #data_zapr = year_zapr + month_zapr + day_zapr
+        #ssylka = "https://days.pravoslavie.ru/Days/" + data_zapr + ".html"
+        #response4 = requests.get(ssylka)
+        #soup = BeautifulSoup(response4.text, "html.parser")
+        #data2 = soup.find_all("span", class_="DD_POST")
+        #trapeza = ""
+        #for span in data2:
+            #vspom40 = span.text
+            #trapeza += str(vspom40)
+        #except: trapeza="УСТАВ ТРАПЕЗЫ НЕТ ОТВЕТА"
     await Bot.send_message(chat_id=os.getenv('moi_id'),text='Божией помощи на день! Дни памяти святых:')
     await Bot.send_message(chat_id=os.getenv('moi_id'), text=f"{svjatyje}")
     await Bot.send_message(chat_id=os.getenv('moi_id'), text='Устав о трапезе:')
@@ -2279,6 +2283,6 @@ async def ezhev_priv():
     await Bot.send_message(chat_id=os.getenv('moi_id'), text='Температура воздуха в Таллинне по часам:')
     await Bot.send_message(chat_id=os.getenv('moi_id'), text=f"{temperature}")
 scheduler = AsyncIOScheduler()
-scheduler.add_job(ezhev_priv, 'cron', hour=14, minute=10, timezone='Europe/Kiev')
+scheduler.add_job(ezhev_priv, 'cron', hour=14, minute=45, timezone='Europe/Kiev')
 if __name__ == "__main__":
     asyncio.run(main())
