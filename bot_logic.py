@@ -2283,6 +2283,6 @@ async def ezhev_priv():
     await Bot.send_message(chat_id=os.getenv('moi_id'), text='Температура воздуха в Таллинне по часам:')
     await Bot.send_message(chat_id=os.getenv('moi_id'), text=f"{temperature}")
 scheduler = AsyncIOScheduler()
-scheduler.add_job(ezhev_priv, 'cron', hour=1, minute=0, timezone='Europe/Kiev')
+scheduler.add_job(ezhev_priv, 'cron', hour=0, minute=45, timezone='Europe/Kiev')
 if __name__ == "__main__":
     asyncio.run(main())
