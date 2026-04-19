@@ -2208,7 +2208,7 @@ async def ezhev_priv():
         for div in data:
             strofa = div.text
             svjatcy  += str(strofa)
-        imena = svjatcy [65:-2]
+        imena = svjatcy [60:-2]
         result = imena.split(")")
         stroka_trapezy= svjatcy.split("Г")
         trapeza=stroka_trapezy[0]
